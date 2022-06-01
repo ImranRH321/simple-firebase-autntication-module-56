@@ -6,18 +6,21 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
+  GithubAuthProvider,
 } from "firebase/auth";
+
+const auth = getAuth(app);
 
 const App = () => {
   const [user, setUser] = useState({});
 
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+  const googleProvider = new GoogleAuthProvider();
+  const githupProvider = new GithubAuthProvider();
 
   // sign login
   const handleGoogleSign = () => {
     const auth = getAuth();
-    signInWithPopup(auth, provider)
+    signInWithPopup(auth, googleProvider)
       .then(result => {
         const user = result.user;
         setUser(user);
@@ -29,7 +32,6 @@ const App = () => {
 
   // sign out
   const handleSignOut = () => {
-    const auth = getAuth();
     signOut(auth)
       .then(() => {
         setUser({});
@@ -39,13 +41,30 @@ const App = () => {
       });
   };
 
+  // Gitup
+  const handleGithupSignIn = () => {
+    signInWithPopup(auth, githupProvider)
+      .then(result => {
+        const user = result.user;
+        console.log(user);
+        setUser(user);
+      })
+      .catch(error => {
+        console.log(error);
+        setUser({});
+      });
+  };
+
   return (
     <div>
       <h3>go for app</h3>
-      {user.email ? (
+      {user.uid ? (
         <button onClick={handleSignOut}>Sign Out</button>
       ) : (
-        <button onClick={handleGoogleSign}>Goggle sign in</button>
+        <div>
+          <button onClick={handleGoogleSign}>Goggle sign in</button>
+          <button onClick={handleGithupSignIn}>Githup Sign In</button>
+        </div>
       )}
 
       <h1>Name: {user.displayName}</h1>
